@@ -1,3 +1,3 @@
 # JavaScript-Demo
 
-# Leetcode problems solving in JavaScript
+#Leetcode problems solving in JavaScript
