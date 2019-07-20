@@ -55,5 +55,5 @@ const raw_input = [
   0
 ];
 
-console.log("DFS:", dfsFlatten(raw_input));
-console.log("BFS:", bfsFlatten(raw_input));
+console.log("DFS:", dfsFlatten(raw_input)); // DFS: [ 1, 2, 3, 4, 5, 6, 0, 4, 3, 7, 0 ]
+console.log("BFS:", bfsFlatten(raw_input)); // BFS: [ 1, 2, 4, 0, 3, 4, 3, 7, 5, 6, 0 ]
