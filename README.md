@@ -2,6 +2,8 @@
 
 #Leetcode problems solving in JavaScript
 
+#Implementation of Native Functions
+
 #Screen shots of passing Leetcode JS compiler
 
 * ![Success](https://github.com/BeeFarmer/JavaScript-Demo/blob/master/Screen_Shots/%236.png)
