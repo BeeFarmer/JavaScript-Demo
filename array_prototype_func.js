@@ -16,6 +16,7 @@ Array.prototype.filter = function(fn) {
 let filter_words = ['a', 'ab', 'bcd', 'asdf', 'asdfre', 'qwerre'];
 let new_result = filter_words.filter(word => word.length > 3);
 console.log('Filter: ', filter_words, "=>", new_result);
+// Filter:  [ 'a', 'ab', 'bcd', 'asdf', 'asdfre', 'qwerre' ] => [ 'asdf', 'asdfre', 'qwerre' ]
 
 // ==== Native Map ====
 Array.prototype.map = function(fn) {
@@ -31,6 +32,7 @@ Array.prototype.map = function(fn) {
 let map_array = [1, 4, 9, 16];
 const new_map = map_array.map(x => x * 2);
 console.log("Map:", map_array, "=>", new_map);
+// Map: [ 1, 4, 9, 16 ] => [ 2, 8, 18, 32 ]
 
 // ==== Native Reduce ====
 Array.prototype.reduce = function(fn) {
@@ -46,6 +48,7 @@ Array.prototype.reduce = function(fn) {
 const reduce_array = [1, 2, 3, 4];
 const reducer = (accumulator, currentValue) => accumulator + currentValue;
 console.log("Reduce:", reduce_array, "=>", reduce_array.reduce(reducer));
+// Reduce: [ 1, 2, 3, 4 ] => 10
 
 // ==== Native Debounce ====
 function debounce(fn, wait) {
@@ -61,7 +64,7 @@ function debounce(fn, wait) {
   };
 }
 
-let event = debounce(function() { console.log('Debounce Outputs'); }, 2000);
+// let event = debounce(function() { console.log('Debounce Outputs'); }, 2000);
 // event();
 // event();
 // event();
@@ -116,9 +119,11 @@ let test = {
 };
 
 test.func();
+// Michael
 let obj = {v: "Abby"};
 let newf = test.func.bind(obj);
 newf(); // current args
+// Abby
 
 // test case 2
 let func = function(a, b) {
@@ -128,6 +133,7 @@ let func = function(a, b) {
 let boundFunc = func.bind(null, 'foo');
 let result = boundFunc('aa', 'aa');
 console.log(result);
+// fooaa
 
 // ==== printTasks ====
 function _showTime() {
@@ -164,3 +170,9 @@ let input = [
 
 console.log(_showTime(), "printTasks Starts");
 printTasks(input);
+/*
+5:27:42 PM printTasks Starts
+5:27:44 PM => a
+5:27:45 PM => b
+5:27:48 PM => c
+*/
