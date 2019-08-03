@@ -20,12 +20,20 @@ let pbContainer = document.querySelector(".bar_container");
 view(pbContainer, pbModel);
 
 function view(container, model) {
+
+  let btnElem = document.querySelector(".stop_btn");
+  btnElem.textContent = "STOP";
+  container.innerHTML = "<div class='bar_container_filling'></div>";
+
+  btnElem.addEventListener("click", function(e) {
+    model.action();
+    btnElem.textContent = (btnElem.textContent === "STOP") ? "RESUME" : "STOP";
+  });
+
   function render(data) {
     let innerElem = document.querySelector(".bar_container_filling");
     innerElem.style.width = data + "%";
   }
-
-  container.innerHTML = "<div class='bar_container_filling'></div>";
 
   model.subscribe(render);
 
@@ -37,6 +45,7 @@ function model() {
   let _subscriber;
   let _interval = 10;
   let _interval_change = 0.5;
+  let _interval_status = true;
 
   let intervalId = setInterval(_update, _interval);
 
@@ -47,11 +56,16 @@ function model() {
     }
     _data += _interval_change;
 
-    if (_data > 100) {
-      clearInterval(intervalId);
-    }
-
     _subscriber(_data);
+  }
+
+  function _action() {
+    if (_interval_status) {
+      clearInterval(intervalId);
+    } else {
+      intervalId = setInterval(_update, _interval);
+    }
+    _interval_status = _interval_status ? false : true;
   }
 
   return {
@@ -59,7 +73,8 @@ function model() {
       if (!_subscriber) {
         _subscriber = cb;
       }
-    }
+    },
+    action: _action,
   };
 
 }

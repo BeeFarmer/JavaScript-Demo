@@ -10,3 +10,18 @@
   height: 50px;
   background-color: #4CAF50;
 }
+
+.stop_btn {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  margin: 20px auto;
+  padding: 15px 32px;
+  display: block;
+  font-size: 16px;
+}
+
+.stop_btn:hover {
+  cursor: pointer;
+  background-color: red;
+}
