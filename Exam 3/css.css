@@ -1,15 +1,12 @@
-* {
-  
-}
+* {}
 
 .bar_container {
   width: 80%;
-  margin: auto;
+  margin: 30px auto 0;
   background-color: linen;
 }
 
 .bar_container_filling {
   height: 50px;
-  width: 50%;
   background-color: #4CAF50;
 }
