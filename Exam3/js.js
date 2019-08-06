@@ -1,25 +1,25 @@
 "use strict"
 
 //filling_bar();
-function filling_bar() {
-  let width = 0;
-  let elem = document.querySelector(".bar_container_filling");
-  let interval_id = setInterval(() => {
-    if (width === 100) {
-      clearInterval(interval_id);
-    }
+// function filling_bar() {
+//   let width = 0;
+//   let elem = document.querySelector(".bar_container_filling");
+//   let interval_id = setInterval(() => {
+//     if (width === 100) {
+//       clearInterval(interval_id);
+//     }
 
-    width += 0.5;
-    elem.style.width = width + "%";
-  }, 20);
-}
+//     width += 0.5;
+//     elem.style.width = width + "%";
+//   }, 20);
+// }
 
 // MVC
-let pbModel = model();
+let new_pbModel = pbModel();
 let pbContainer = document.querySelector(".bar_container");
-view(pbContainer, pbModel);
+pbView(pbContainer, new_pbModel);
 
-function view(container, model) {
+function pbView(container, model) {
 
   let btnElem = document.querySelector(".stop_btn");
   btnElem.textContent = "STOP";
@@ -40,7 +40,8 @@ function view(container, model) {
   render();
 }
 
-function model() {
+function pbModel() {
+
   let _data = 0;
   let _subscriber;
   let _interval = 10;
@@ -76,5 +77,27 @@ function model() {
     },
     action: _action,
   };
+}
+
+
+let new_acModel = acModel();
+let acContainer = document.querySelector(".autocom_container");
+acView(acContainer, new_acModel);
+
+function acModel() {
+  return {
+    a:999,
+  };
+}
+
+function acView(container, model) {
+
+  let _input = document.createElement('input');
+
+  _input.setAttribute('type', 'text');
+  _input.setAttribute('class', 'autocom_input');
+  _input.setAttribute('placeholder', 'Search...');
+
+  container.appendChild(_input);
 
 }

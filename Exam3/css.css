@@ -1,5 +1,9 @@
-* {}
+* {
+  margin: 0;
+  padding: 0;
+}
 
+/*Progress Bar */
 .bar_container {
   width: 80%;
   margin: 30px auto 0;
@@ -24,4 +28,9 @@
 .stop_btn:hover {
   cursor: pointer;
   background-color: red;
+}
+
+/*Autocomplete*/
+.autocom_input {
+  
 }
