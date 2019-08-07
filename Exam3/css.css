@@ -33,14 +33,14 @@
 
 /*Autocomplete*/
 .autocom_container {
-  margin: 75px 25px;
+  margin: 50px 25px;
   font: 16px Arial;
 }
 
 .autocom_input {
   display: block;
-  width: 25%;
-  margin: 20px auto 0;
+  width: 28%;
+  margin: 10px auto 0;
   border: none;
   background-color: #f1f1f1;
   padding: 10px;
@@ -48,7 +48,7 @@
 }
 
 .autocom_list {
-  width: 25%;
+  width: 28%;
   margin: 0 auto;
   border: 1px solid #d4d4d4;
   border-bottom: none;

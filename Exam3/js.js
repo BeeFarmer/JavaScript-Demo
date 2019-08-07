@@ -85,9 +85,52 @@ let acContainer = document.querySelector(".autocom_container");
 acView(acContainer, new_acModel);
 
 function acModel() {
+
+  let _subscriber;
+  let _cache = [];
+  let _data = [];
+  let _selected = -1;
+
+  function cacheApi() {
+    fetch("https://pokeapi.co/api/v2/pokemon/?limit=70")
+      .then(response => response.json())
+      .then(function(json){
+        let results = json.results;
+        for (let item of results) {
+          _cache.push(item.name);
+        }
+      });
+  }
+
+  function cacheLocal(text) {
+    let temp_data = [];
+    for (let i = 0; i < _cache.length; ++i) {
+      if (text && text === _cache[i].slice(0, text.length)) {
+        temp_data.push(_cache[i]);
+      }
+    }
+
+    _data = temp_data;
+    _subscriber(_data, text);
+  }
+
+  function _fetchData(text) {
+    if (!_cache.length) {
+      cacheApi();
+    }
+
+    setTimeout(cacheLocal, 300, text);
+  }
+
   return {
-    a:999,
+    subscribe: function(cb) {
+      if (!_subscriber) {
+        _subscriber = cb;
+      }
+    },
+    fetchData: _fetchData,
   };
+
 }
 
 function acView(container, model) {
@@ -104,7 +147,7 @@ function acView(container, model) {
   container.appendChild(_options);
 
   _input.addEventListener("input", function(e){
-    render(e.target.value);
+    model.fetchData(e.target.value);
   });
 
   document.addEventListener("click", function(e){
@@ -120,19 +163,23 @@ function acView(container, model) {
     }
   }
 
-  function render(inp) {
+  function render(inp, cur_text) {
     _closeOptions();
-    if (inp) {    
-      let singleOption = document.createElement('div');
-      singleOption.setAttribute("data-value", inp);
-      singleOption.innerHTML = `<strong>${inp[0]}</strong>`;
-      singleOption.innerHTML += inp.slice(1);
-      singleOption.addEventListener("click", function(e){
-        _input.value = this.getAttribute("data-value");
-        _closeOptions();
-      });
-      _options.appendChild(singleOption);
+    if (inp.length) {
+      for (let i = 0; i < inp.length; ++i) {
+        let cur_text_len = cur_text.length;
+        let singleOption = document.createElement('div');
+        singleOption.setAttribute("data-value", inp[i]);
+        singleOption.innerHTML = `<strong>${inp[i].slice(0, cur_text_len)}</strong>`;
+        singleOption.innerHTML += inp[i].slice(cur_text_len);
+        singleOption.addEventListener("click", function(e){
+          _input.value = this.getAttribute("data-value");
+          _closeOptions();
+        });
+        _options.appendChild(singleOption);
+      }
     }
   }
 
+  model.subscribe(render);
 }
