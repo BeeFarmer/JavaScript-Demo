@@ -93,11 +93,46 @@ function acModel() {
 function acView(container, model) {
 
   let _input = document.createElement('input');
+  let _options = document.createElement('div');
 
   _input.setAttribute('type', 'text');
   _input.setAttribute('class', 'autocom_input');
   _input.setAttribute('placeholder', 'Search...');
+  _options.setAttribute('class', 'autocom_list');
 
   container.appendChild(_input);
+  container.appendChild(_options);
+
+  _input.addEventListener("input", function(e){
+    render(e.target.value);
+  });
+
+  document.addEventListener("click", function(e){
+    _closeOptions(e.target);
+  });
+
+  function _closeOptions(elem) {
+    let options = _options.children;
+    for (let i = 0; i < options.length; ++i) {
+      if (elem !== options[i] && elem != _input) {
+        _options.innerHTML = "";
+      }
+    }
+  }
+
+  function render(inp) {
+    _closeOptions();
+    if (inp) {    
+      let singleOption = document.createElement('div');
+      singleOption.setAttribute("data-value", inp);
+      singleOption.innerHTML = `<strong>${inp[0]}</strong>`;
+      singleOption.innerHTML += inp.slice(1);
+      singleOption.addEventListener("click", function(e){
+        _input.value = this.getAttribute("data-value");
+        _closeOptions();
+      });
+      _options.appendChild(singleOption);
+    }
+  }
 
 }
