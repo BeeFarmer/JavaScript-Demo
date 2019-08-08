@@ -14,7 +14,11 @@
 //   }, 20);
 // }
 
+
 // MVC
+// ======================
+// ==== Progress Bar ====
+// ======================
 let new_pbModel = pbModel();
 let pbContainer = document.querySelector(".bar_container");
 pbView(pbContainer, new_pbModel);
@@ -78,21 +82,56 @@ function pbModel() {
     action: _action,
   };
 }
+// =============
+// ==== END ====
+// =============
 
+// =======================================
+// ==== Autocomplete (API and no API) ====
+// =======================================
+const OPTIONS = [
+    'CA',
+    'AZ',
+    'WA',
+    'NY',
+    'OR',
+    'TX',
+    'TS',
+    'ML',
+    'MX',
+    //'~Abby~'
+  ];
 
-let new_acModel = acModel();
-let acContainer = document.querySelector(".autocom_container");
-acView(acContainer, new_acModel);
+let new_acModel_api = acModel("https://pokeapi.co/api/v2/pokemon/?limit=70");
+let new_acModel_no_api = acModel();
+let acContainer = document.querySelectorAll(".autocom_container");
+acView(acContainer[0], new_acModel_api);
+acView(acContainer[1], new_acModel_no_api);
 
-function acModel() {
+function debounce(fn, wait) {
+  let _timerId;
+
+  return function() {
+    let context = this;
+    let args = arguments;
+
+    clearTimeout(_timerId);
+    _timerId = setTimeout(() => {
+      fn.apply(context, args)
+    }, wait);
+  };
+}
+
+function acModel(apiURL=null) {
 
   let _subscriber;
   let _cache = [];
   let _data = [];
-  let _selected = -1;
+  let _selected = -1; // current selected index
+  let _pre_selected = -1; // previous selected index
 
   function cacheApi() {
-    fetch("https://pokeapi.co/api/v2/pokemon/?limit=70")
+    fetch(apiURL)
       .then(response => response.json())
       .then(function(json){
         let results = json.results;
@@ -104,9 +143,19 @@ function acModel() {
 
   function cacheLocal(text) {
     let temp_data = [];
-    for (let i = 0; i < _cache.length; ++i) {
-      if (text && text === _cache[i].slice(0, text.length)) {
-        temp_data.push(_cache[i]);
+    if (text) {
+      if (apiURL) {
+        for (let i = 0; i < _cache.length; ++i) {
+          if (text === _cache[i].slice(0, text.length)) {
+            temp_data.push(_cache[i]);
+          }
+        }
+      } else {
+        for (let i = 0; i < _cache.length; ++i) {
+          if (_cache[i].includes(text)) {
+            temp_data.push(_cache[i]);
+          }
+        }
       }
     }
 
@@ -116,10 +165,45 @@ function acModel() {
 
   function _fetchData(text) {
     if (!_cache.length) {
-      cacheApi();
+      if (apiURL) {
+        cacheApi();
+      } else {
+        _cache = OPTIONS;
+      }
     }
 
+    // reinitialize selected values
+    _selected = -1;
+    _pre_selected = -1
     setTimeout(cacheLocal, 300, text);
+  }
+
+  function _arrowKey(kcode) {
+
+    switch (kcode) {
+      case 38:
+        --_selected;
+        _selected = (_selected < 0) ? _data.length-1 : _selected;
+        break;
+      case 40:
+        ++_selected;
+        _selected = (_selected >= _data.length) ? 0 : _selected;
+        break;
+      case 13: // press Enter
+        _pre_selected = _selected;
+        break;
+      default: // press non-arrow keys or Enter key, exit
+        return ;
+    }
+
+    _subscriber(_data, "", _pre_selected, _selected);
+    if (_pre_selected === _selected) {
+      // Enter key case, reinitialize selected values
+      _selected = -1;
+      _pre_selected = -1;
+    }
+    // update pre to current selected
+    _pre_selected = _selected;
   }
 
   return {
@@ -129,6 +213,8 @@ function acModel() {
       }
     },
     fetchData: _fetchData,
+    arrowKey: _arrowKey,
+    requireApi: (apiURL) ? true : false,
   };
 
 }
@@ -146,12 +232,21 @@ function acView(container, model) {
   container.appendChild(_input);
   container.appendChild(_options);
 
+  let debouncedFetchData = debounce(model.fetchData, 100);
+
   _input.addEventListener("input", function(e){
-    model.fetchData(e.target.value);
+    let cur_text = e.target.value;
+    debouncedFetchData(cur_text);
+  });
+
+  _input.addEventListener('keydown', function(e){
+    let keyCode = e.keyCode;
+    model.arrowKey(keyCode);
   });
 
   document.addEventListener("click", function(e){
-    _closeOptions(e.target);
+    let cur_click = e.target;
+    _closeOptions(cur_click);
   });
 
   function _closeOptions(elem) {
@@ -163,15 +258,43 @@ function acView(container, model) {
     }
   }
 
-  function render(inp, cur_text) {
+  function alterActive(data, pre, next) {
+    let pre_elem = _options.querySelector(`div[data-value='${data[pre]}']`);
+    let next_elem = _options.querySelector(`div[data-value='${data[next]}']`);
+    if (pre_elem) {
+      // no current selected element 
+      pre_elem.classList.remove("autocom_list_active");
+    }
+    next_elem.classList.add("autocom_list_active");
+  }
+
+  function render(data, cur_text, ...args) {
+    if (arguments.length > 2) { 
+      // _subscriber called from _arrowKey, no re-render needed
+      let pre_selected = args[0];
+      let next_selected = args[1];
+      if (pre_selected === next_selected) {
+        // press Enter case
+        let selected_elem = _options.querySelector(`div[data-value='${data[next_selected]}']`);
+        selected_elem.click();
+      } else {
+        alterActive(data, pre_selected, next_selected);
+      }
+      return ;
+    }
+    // re-render
     _closeOptions();
-    if (inp.length) {
-      for (let i = 0; i < inp.length; ++i) {
+    if (data.length) {
+      for (let i = 0; i < data.length; ++i) {
         let cur_text_len = cur_text.length;
         let singleOption = document.createElement('div');
-        singleOption.setAttribute("data-value", inp[i]);
-        singleOption.innerHTML = `<strong>${inp[i].slice(0, cur_text_len)}</strong>`;
-        singleOption.innerHTML += inp[i].slice(cur_text_len);
+        singleOption.setAttribute("data-value", data[i]);
+        if (model.requireApi) {
+          singleOption.innerHTML = `<strong>${data[i].slice(0, cur_text_len)}</strong>`;
+          singleOption.innerHTML += data[i].slice(cur_text_len);
+        } else {
+          singleOption.innerHTML = data[i];
+        }
         singleOption.addEventListener("click", function(e){
           _input.value = this.getAttribute("data-value");
           _closeOptions();
@@ -183,3 +306,6 @@ function acView(container, model) {
 
   model.subscribe(render);
 }
+// =============
+// ==== END ====
+// =============
