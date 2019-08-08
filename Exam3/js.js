@@ -90,6 +90,7 @@ function pbModel() {
 // ==== Autocomplete (API and no API) ====
 // =======================================
 const OPTIONS = [
+    "♥♥",
     'CA',
     'AZ',
     'WA',
@@ -99,7 +100,6 @@ const OPTIONS = [
     'TS',
     'ML',
     'MX',
-    //'~Abby~'
   ];
 
 let new_acModel_api = acModel("https://pokeapi.co/api/v2/pokemon/?limit=70");
