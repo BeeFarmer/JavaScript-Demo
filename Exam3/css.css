@@ -69,3 +69,31 @@
   background-color: DodgerBlue !important;
   color: #ffffff;
 }
+
+/*Whack a Mole*/
+.game_container {
+  width: 70%;
+  height: 600px;
+  margin: 30px auto;
+  background-color: linen;
+}
+
+.grid {
+  width: 60%;
+  height: 530px;
+  margin: auto;
+  background-color: white;
+}
+
+.grid > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.grid .cell {
+  flex-basis: 31%;
+  height: 150px;
+  margin: 12px 0 5px;
+  background-color: green;
+}

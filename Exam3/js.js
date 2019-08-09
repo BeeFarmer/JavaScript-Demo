@@ -309,3 +309,100 @@ function acView(container, model) {
 // =============
 // ==== END ====
 // =============
+
+// ======================
+// ==== Whack a Mole ====
+// ======================
+let new_gameModel = gameModel();
+let gameContainer = document.querySelector(".game_container");
+gameView(gameContainer, new_gameModel);
+
+function gameModel() {
+  
+  let _subscriber;
+  let _data = {
+    fill: [],
+    score: 0,
+    count: 0,
+  };
+
+  _data.fill = getRandom();
+
+  return {
+    subscribe: function(cb) {
+      if (!_subscriber) {
+        _subscriber = cb;
+      }
+    },
+    getData: () => _data,
+    click: function(addScore) {
+      _data.fill = getRandom();
+      _data.score += addScore ? 1 : 0;
+      ++_data.count;
+
+      _subscriber(_data);
+    }
+  };
+}
+
+function gameView(container, model) {
+  let grid = document.createElement("div");
+  let point = document.createElement("div");
+
+  grid.setAttribute("class", "grid");
+  point.setAttribute("class", "point");
+
+  container.appendChild(grid);
+  container.appendChild(point);
+
+  function render(data) {
+    let {fill, score, count} = data;
+
+    while (grid.firstChild) {
+      grid.removeChild(grid.firstChild);
+    }
+
+    if (count < 10) {
+      grid.appendChild( createGrid(fill) );
+    }
+
+    point.innerHTML = "Final Score: " + score;
+  }
+
+  // click eventListener
+
+  model.subscribe(render);
+
+  render(model.getData());
+}
+
+function createGrid(arr) {
+  let inner = document.createElement("div");
+  for (let i = 0; i < 9; ++i) {
+    let cell = document.createElement("div");
+    cell.setAttribute("class", "cell");
+    if (arr[i]) {
+      cell.innerHTML = "M";
+    }
+    inner.appendChild(cell);
+  }
+
+  return inner;
+}
+
+function getRandom() {
+  let result = [];
+  let num_list = [0,1,2,3,4,5,6,7,8];
+
+  for (let i = 0; i < 3; ++i) {
+    let index = getRandomByRange(0, num_list.length - 1);
+    result[num_list[index]] = true;
+    num_list.splice(index, 1);
+  }
+
+  return result;
+}
+
+function getRandomByRange(l, r) {
+  return Math.floor(Math.random()*(r - l)) + l;
+}
