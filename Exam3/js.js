@@ -48,8 +48,8 @@ function pbModel() {
 
   let _data = 0;
   let _subscriber;
-  let _interval = 10;
-  let _interval_change = 0.5;
+  let _interval = 5;
+  let _interval_change = 0.25;
   let _interval_status = true;
 
   let intervalId = setInterval(_update, _interval);
@@ -324,9 +324,20 @@ function gameModel() {
     fill: [],
     score: 0,
     count: 0,
+    total: 10,
   };
 
   _data.fill = getRandom();
+
+  let _getData = () => _data;
+
+  function _click(addScore) {
+    _data.fill = getRandom();
+    _data.score += addScore ? 1 : 0;
+    ++_data.count;
+
+    _subscriber(_data);
+  }
 
   return {
     subscribe: function(cb) {
@@ -334,14 +345,8 @@ function gameModel() {
         _subscriber = cb;
       }
     },
-    getData: () => _data,
-    click: function(addScore) {
-      _data.fill = getRandom();
-      _data.score += addScore ? 1 : 0;
-      ++_data.count;
-
-      _subscriber(_data);
-    }
+    getData: _getData,
+    click: _click,
   };
 }
 
@@ -356,20 +361,27 @@ function gameView(container, model) {
   container.appendChild(point);
 
   function render(data) {
-    let {fill, score, count} = data;
+    let {fill, score, count, total} = data;
 
     while (grid.firstChild) {
       grid.removeChild(grid.firstChild);
     }
 
-    if (count < 10) {
+    if (count < total) {
       grid.appendChild( createGrid(fill) );
+      point.innerHTML = "Current Score: " + score;
+    } else {
+      point.innerHTML = "<b>Final Score: " + score + "</b>";
+      grid.appendChild(point);
     }
-
-    point.innerHTML = "Final Score: " + score;
   }
 
-  // click eventListener
+  grid.addEventListener("click", function(e){
+    let target = e.target;
+    if (!target.className.toLowerCase().includes("cell")) return;
+
+    model.click(target.innerHTML === "M");
+  });
 
   model.subscribe(render);
 
@@ -380,7 +392,7 @@ function createGrid(arr) {
   let inner = document.createElement("div");
   for (let i = 0; i < 9; ++i) {
     let cell = document.createElement("div");
-    cell.setAttribute("class", "cell");
+    cell.setAttribute("class", "cell cell2");
     if (arr[i]) {
       cell.innerHTML = "M";
     }

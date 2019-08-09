@@ -74,15 +74,18 @@
 .game_container {
   width: 70%;
   height: 600px;
-  margin: 30px auto;
-  background-color: linen;
+  margin: 100px auto;
+}
+
+.point {
+  text-align: center;
+  font: 28px Arial;
 }
 
 .grid {
-  width: 60%;
+  width: 55%;
   height: 530px;
   margin: auto;
-  background-color: white;
 }
 
 .grid > div {
@@ -92,8 +95,17 @@
 }
 
 .grid .cell {
-  flex-basis: 31%;
+  flex-basis: 30.5%;
   height: 150px;
   margin: 12px 0 5px;
-  background-color: green;
+  font: 38px Arial;
+  border-radius: 10px;
+  background-color: #8B4513;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid .cell:hover{
+  cursor: pointer;
 }
