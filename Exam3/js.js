@@ -89,6 +89,7 @@ function pbModel() {
 // =======================================
 // ==== Autocomplete (API and no API) ====
 // =======================================
+const TESTAPI = "https://pokeapi.co/api/v2/pokemon/?limit=70";
 const OPTIONS = [
     "♥♥",
     'CA',
@@ -102,7 +103,7 @@ const OPTIONS = [
     'MX',
   ];
 
-let new_acModel_api = acModel("https://pokeapi.co/api/v2/pokemon/?limit=70");
+let new_acModel_api = acModel(TESTAPI);
 let new_acModel_no_api = acModel();
 let acContainer = document.querySelectorAll(".autocom_container");
 acView(acContainer[0], new_acModel_api);
@@ -175,7 +176,7 @@ function acModel(apiURL=null) {
     // reinitialize selected values
     _selected = -1;
     _pre_selected = -1
-    setTimeout(cacheLocal, 300, text);
+    setTimeout(cacheLocal, 400, text);
   }
 
   function _arrowKey(kcode) {
@@ -339,6 +340,14 @@ function gameModel() {
     _subscriber(_data);
   }
 
+  function _initData() {
+    _data.fill = getRandom();
+    _data.score = 0;
+    _data.count = 0;
+
+    return _data;
+  }
+
   return {
     subscribe: function(cb) {
       if (!_subscriber) {
@@ -346,6 +355,7 @@ function gameModel() {
       }
     },
     getData: _getData,
+    initData: _initData,
     click: _click,
   };
 }
@@ -372,7 +382,18 @@ function gameView(container, model) {
       point.innerHTML = "Current Score: " + score;
     } else {
       point.innerHTML = "<b>Final Score: " + score + "</b>";
+      let restart = document.createElement("div");
+      restart.setAttribute("class", "restart");
+      restart.innerHTML = "Play Again";
       grid.appendChild(point);
+      grid.appendChild(restart);
+
+      restart.addEventListener("click", function(e){
+        render(model.initData());
+        container.appendChild(point);
+        // make it one-time event listener to avoid repetition
+        //e.target.removeEventListener(e.type, arguments.callee);
+      });
     }
   }
 
